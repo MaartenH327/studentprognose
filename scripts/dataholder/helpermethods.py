@@ -86,33 +86,33 @@ class HelperMethods:
 
     # Helper function for prepare_data() (see below). Makes sure there will not be more predicted
     # students for a numerus fixus programme than the number of students that are allowed.
-    def _numerus_fixus_cap(self, data):
-        for year in data["Collegejaar"].unique():
-            for week in data["Weeknummer"].unique():
-                for nf in self.numerus_fixus_list:
-                    nf_data = data[
-                        (data["Collegejaar"] == year)
-                        & (data["Weeknummer"] == week)
-                        & (data["Croho groepeernaam"] == nf)
-                    ]
-                    if np.sum(nf_data["SARIMA_individual"]) > self.numerus_fixus_list[nf]:
-                        data = self._nf_students_based_on_distribution_of_last_years(
-                            self.data_latest, nf, year, week, "SARIMA_individual"
-                        )
+    def _numerus_fixus_cap(self, data, year, week):
+        for nf in self.numerus_fixus_list:
+            nf_data = data[
+                (data["Collegejaar"] == year)
+                & (data["Weeknummer"] == week)
+                & (data["Croho groepeernaam"] == nf)
+            ]
+            if np.sum(nf_data["SARIMA_individual"]) > self.numerus_fixus_list[nf]:
+                data = self._nf_students_based_on_distribution_of_last_years(
+                    data, self.data_latest, nf, year, week, "SARIMA_individual"
+                )
 
-                    if np.sum(nf_data["SARIMA_cumulative"]) > self.numerus_fixus_list[nf]:
-                        data = self._nf_students_based_on_distribution_of_last_years(
-                            self.data_latest, nf, year, week, "SARIMA_cumulative"
-                        )
+            if np.sum(nf_data["SARIMA_cumulative"]) > self.numerus_fixus_list[nf]:
+                data = self._nf_students_based_on_distribution_of_last_years(
+                    data, self.data_latest, nf, year, week, "SARIMA_cumulative"
+                )
 
         return data
 
-    def _nf_students_based_on_distribution_of_last_years(self, data, nf, year, week, method):
-        last_years_data = data[
-            (data["Collegejaar"] < year)
-            & (data["Collegejaar"] >= year - 3)
-            & (data["Weeknummer"] == week)
-            & (data["Croho groepeernaam"] == nf)
+    def _nf_students_based_on_distribution_of_last_years(
+        self, data, data_latest, nf, year, week, method
+    ):
+        last_years_data = data_latest[
+            (data_latest["Collegejaar"] < year)
+            & (data_latest["Collegejaar"] >= year - 3)
+            & (data_latest["Weeknummer"] == week)
+            & (data_latest["Croho groepeernaam"] == nf)
         ].fillna(0)
         distribution_per_herkomst = {"EER": [], "NL": [], "Niet-EER": []}
         for last_year in range(year - 3, year):
@@ -140,9 +140,9 @@ class HelperMethods:
     # This method is used in the main class after predicting the number of students and processes
     # the data to be ready for output. The only calculation done is the numerus fixus cap. For the
     # rest it is only merging some dataframes, removing columns and replacing faculty codes.
-    def prepare_data_for_output_prelim(self, data, data_cumulative=None, skip_years=0):
+    def prepare_data_for_output_prelim(self, data, year, week, data_cumulative=None, skip_years=0):
         self.data = data
-        self.data = self._numerus_fixus_cap(self.data)
+        self.data = self._numerus_fixus_cap(self.data, year, week)
 
         # We will remove redundant columns we don't want in our output_prelim.
         columns_to_select = [

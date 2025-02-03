@@ -40,12 +40,14 @@ class PredictHigherYearsBasedOnLastYearNumbers:
                         & (self.data_latest["Herkomst"] == herkomst)
                         & (self.data_latest["Collegejaar"] == predict_year - 1)
                     ]
+
                     try:
                         faculteit = self.data_latest[
                             self.data_latest["Croho groepeernaam"] == programme
                         ]["Faculteit"].values[0]
                     except:
                         faculteit = None  # Van toepassing bij nieuwe opleidingen waarvan faculteit niet bekend is in totaalbestand.
+
                     for week in range(1, 53):
                         if data_filtered[data_filtered["Weeknummer"] == week].empty:
                             all_data = all_data._append(
@@ -70,7 +72,7 @@ class PredictHigherYearsBasedOnLastYearNumbers:
                             & (all_data["Croho groepeernaam"] == programme)
                             & (all_data["Herkomst"] == herkomst)
                             & (all_data["Examentype"] == examtype),
-                            "Higher_years_prediction_CurrentYear",
+                            "Higher_years_prediction",
                         ] = nextyear_higher_years
 
                     elif skip_years:
@@ -80,7 +82,7 @@ class PredictHigherYearsBasedOnLastYearNumbers:
                             & (all_data["Herkomst"] == herkomst)
                             & (all_data["Examentype"] == examtype)
                             & (all_data["Weeknummer"] == week),
-                            "Higher_years_prediction_CurrentYear",
+                            "Higher_years_prediction",
                         ] = nextyear_higher_years
 
         return all_data
@@ -133,7 +135,7 @@ class PredictHigherYearsBasedOnLastYearNumbers:
                 & (self.data_latest["Weeknummer"] == week)
             ]
 
-            currentyear_higher_years = predicted_row["Higher_years_prediction_CurrentYear"]
+            currentyear_higher_years = predicted_row["Higher_years_prediction"]
             if not currentyear_higher_years.empty:
                 currentyear_higher_years = currentyear_higher_years.values[0]
             else:
@@ -193,22 +195,22 @@ if __name__ == "__main__":
         )
 
     print("Adding MAE and MAPE errors (if applicable)")
-    data_latest["MAE_higher_years_CurrentYear"] = data_latest.apply(
+    data_latest["MAE_higher_years"] = data_latest.apply(
         lambda row: (
-            abs(row["Aantal_studenten_higher_years"] - row["Higher_years_prediction_CurrentYear"])
-            if pd.notna(row["Higher_years_prediction_CurrentYear"])
+            abs(row["Aantal_studenten_higher_years"] - row["Higher_years_prediction"])
+            if pd.notna(row["Higher_years_prediction"])
             and pd.notna(row["Aantal_studenten_higher_years"])
             else np.nan
         ),
         axis=1,
     )
-    data_latest["MAPE_higher_years_CurrentYear"] = data_latest.apply(
+    data_latest["MAPE_higher_years"] = data_latest.apply(
         lambda row: (
             abs(
-                (row["Aantal_studenten_higher_years"] - row["Higher_years_prediction_CurrentYear"])
+                (row["Aantal_studenten_higher_years"] - row["Higher_years_prediction"])
                 / row["Aantal_studenten_higher_years"]
             )
-            if pd.notna(row["Higher_years_prediction_CurrentYear"])
+            if pd.notna(row["Higher_years_prediction"])
             and pd.notna(row["Aantal_studenten_higher_years"])
             and row["Aantal_studenten_higher_years"] != 0
             else np.nan

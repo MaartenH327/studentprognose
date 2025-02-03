@@ -24,6 +24,7 @@ class Superclass(ABC):
         # be declared later in set_filtering().
         self.programme_filtering = []
         self.herkomst_filtering = []
+        self.examentype_filtering = []
 
     # Abstract method that must be defined in the subclasses (Indivual, Cumulative, BothDatasets)
     # itself.
@@ -48,9 +49,10 @@ class Superclass(ABC):
 
     # Sets the programme and herkomst filtering. These values are specified in the configuration
     # file.
-    def set_filtering(self, programme_filtering, herkomst_filtering):
+    def set_filtering(self, programme_filtering, herkomst_filtering, examentype_filtering):
         self.programme_filtering = programme_filtering
         self.herkomst_filtering = herkomst_filtering
+        self.examentype_filtering = examentype_filtering
 
     # Method that returns a table with information about the data that will be predicted. This will
     # done repeatedly for every specified week and year to be predicted. This is an example of
@@ -65,7 +67,9 @@ class Superclass(ABC):
 
     # This method will only be called when predicting individual values only because this will
     # done slightly different when predicting cumulative or both datasets.
-    def get_data_to_predict(self, data, programme_filtering=[], herkomst_filtering=[]):
+    def get_data_to_predict(
+        self, data, programme_filtering=[], herkomst_filtering=[], examentype_filtering=[]
+    ):
         # These are the columns that will be defined in the table of data to predict.
         predict_dict = {
             "Croho groepeernaam": [],
@@ -96,14 +100,30 @@ class Superclass(ABC):
                 ).elements()
             )
 
+        all_examentypes = data["Examentype"].unique()
+        if examentype_filtering != []:
+            all_examentypes = list(
+                (
+                    collections.Counter(all_examentypes)
+                    & collections.Counter(examentype_filtering)
+                ).elements()
+            )
+
         # Add one line in the table per unique programme, examentype and herkomst that has to
         # be predicted.
         for programme in np.sort(all_programmes):
-            all_examentypes = data[
+            available_examentypes_for_programme = data[
                 (data["Croho groepeernaam"] == programme)
                 & (data["Collegejaar"] == self.predict_year)
             ]["Examentype"].unique()
-            for examentype in np.sort(all_examentypes):
+
+            examentypes_to_consider = list(
+                (
+                    collections.Counter(available_examentypes_for_programme)
+                    & collections.Counter(all_examentypes)
+                ).elements()
+            )
+            for examentype in np.sort(examentypes_to_consider):
                 for herkomst in np.sort(all_herkomsts):
                     predict_dict["Croho groepeernaam"].append(programme)
                     predict_dict["Herkomst"].append(herkomst)

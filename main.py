@@ -275,6 +275,7 @@ class Main:
         self.dataholder.set_filtering(
             self.filtering["filtering"]["programme"],
             self.filtering["filtering"]["herkomst"],
+            self.filtering["filtering"]["examentype"],
         )
 
         for year in self.years:
@@ -291,7 +292,7 @@ class Main:
                     if data_to_predict is None:
                         continue
                     self.dataholder.helpermethods.prepare_data_for_output_prelim(
-                        data_to_predict, self.data_cumulative, self.skip_years
+                        data_to_predict, year, week, self.data_cumulative, self.skip_years
                     )
 
                     if (

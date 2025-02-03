@@ -209,7 +209,10 @@ class Individual(Superclass):
         self.data_individual = transform_data(self.data_individual, "Cumulative_sum_within_year")
 
         data_to_predict = self.get_data_to_predict(
-            self.data_individual, self.programme_filtering, self.herkomst_filtering
+            self.data_individual,
+            self.programme_filtering,
+            self.herkomst_filtering,
+            self.examentype_filtering,
         )
 
         if len(data_to_predict) == 0:

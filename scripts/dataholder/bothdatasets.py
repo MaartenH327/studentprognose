@@ -142,6 +142,10 @@ class BothDatasets(Superclass):
             data_to_predict = data_to_predict[
                 (data_to_predict["Herkomst"].isin(self.herkomst_filtering))
             ]
+        if self.examentype_filtering != []:
+            data_to_predict = data_to_predict[
+                (data_to_predict["Examentype"].isin(self.examentype_filtering))
+            ]
 
         if len(data_to_predict) == 0:
             return None
@@ -191,7 +195,7 @@ class BothDatasets(Superclass):
     # Predicts nr of students using both the individual and cumulative dataset
     def predict_with_sarima(self, row):
         print(
-            f"Prediction for {row['Croho groepeernaam']}, {row['Herkomst']}, year: {self.predict_year}, week: {self.predict_week}"
+            f"Prediction for {row['Croho groepeernaam']}, {row['Examentype']}, {row['Herkomst']}, year: {self.predict_year}, week: {self.predict_week}"
         )
 
         sarima_individual = self.individual.predict_with_sarima(

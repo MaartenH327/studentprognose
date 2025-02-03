@@ -71,6 +71,11 @@ class Cumulative(Superclass):
             }
         )
 
+        data.loc[
+            (data["Examentype"] == "Pre-master"),
+            "Hogerejaars",
+        ] = "Nee"
+
         # We filter out the higher year students because we only want to first years.
         data = data[data["Hogerejaars"] == "Nee"]
 
@@ -156,23 +161,18 @@ class Cumulative(Superclass):
             (self.data_cumulative["Collegejaar"] == self.predict_year)
             & (self.data_cumulative["Weeknummer"] == self.predict_week)
         ]
-
-        print("DATA TO PREDICT 1")
-        print(data_to_predict)
-        print(self.programme_filtering)
         if self.programme_filtering != []:
             data_to_predict = data_to_predict[
                 (data_to_predict["Croho groepeernaam"].isin(self.programme_filtering))
             ]
-        print("DATA TO PREDICT 1.5")
-        print(data_to_predict)
         if self.herkomst_filtering != []:
             data_to_predict = data_to_predict[
                 (data_to_predict["Herkomst"].isin(self.herkomst_filtering))
             ]
-
-        print("DATA TO PREDICT 2")
-        print(data_to_predict)
+        if self.examentype_filtering != []:
+            data_to_predict = data_to_predict[
+                (data_to_predict["Examentype"].isin(self.examentype_filtering))
+            ]
 
         if len(data_to_predict) == 0:
             return None
@@ -194,9 +194,6 @@ class Cumulative(Superclass):
             for chunk in chunks
             for _, row in chunk.iterrows()
         )
-
-        print("Predicted data")
-        print(self.predicted_data)
 
         # Create two new columns with NaN values. 'Voorspelde vooraanmelders' is just predicted
         # and stored in predicted_data. This will be added with 'add_predicted_preregistrations()'.
@@ -235,17 +232,13 @@ class Cumulative(Superclass):
         self.data_cumulative["ts"] = (
             self.data_cumulative["Gewogen vooraanmelders"] + self.data_cumulative["Inschrijvingen"]
         )
-        print("PREPARED DATA")
-        print(self.data_cumulative)
 
         self.data_cumulative = self.data_cumulative.drop_duplicates()
 
-        """
         # Change faculty codes
         self.data_cumulative["Faculteit"] = self.data_cumulative["Faculteit"].replace(
             self.faculty_transformation,
         )
-        """
 
         if int(self.predict_week) > 38:
             self.pred_len = 38 + 52 - int(self.predict_week)
@@ -257,12 +250,7 @@ class Cumulative(Superclass):
         data = data[data["Collegejaar"] >= 2016]
 
         # Makes a certain pivot_wider where it transforms the data from long to wide
-        pd.set_option("display.max_columns", None)
-        print(data)
         data = transform_data(data, "ts")
-        # data = transform_data(data, "Gewogen vooraanmelders")
-        # print("TRANSFORMED DATA")
-        # print(data)
         return data
 
     def predict_with_sarima(self, row, already_printed=False):
