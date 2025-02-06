@@ -31,7 +31,7 @@ This Python script predicts the influx of students at the Radboud University for
 To get started, use the make file to install all pre-commit, pre-push files and dependencies and create a virtual environment. Please do this every time you are going to use the program. This ensures being up-to-date and the usage of the virtual environment.
 
 ```
-make install
+make 
 ```
 
 ## Usage of program
