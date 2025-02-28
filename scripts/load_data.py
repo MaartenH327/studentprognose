@@ -1,31 +1,74 @@
 import pandas as pd
 import json
 import os
+from scripts.helper import DataOption
+from scripts.standalone.add_weeks_where_preapplicants_are_zero import (
+    AddWeeksWherePreapplicantsAreZero,
+)
 
 
-def load_data(configuration):
+def load_data(configuration, data_option):
     paths = configuration["paths"]
 
-    data_individual = (
-        pd.read_csv(paths["path_individual"], sep=";", skiprows=[1])
-        if (paths["path_individual"] != "" and os.path.exists(paths["path_individual"]))
-        else None
-    )
-    data_cumulative = (
-        pd.read_csv(paths["path_cumulative"], sep=";", skiprows=[1], low_memory=True)
-        if (paths["path_cumulative"] != "" and os.path.exists(paths["path_cumulative"]))
-        else None
-    )
+    data_individual = None
+    data_distances = None
+    if data_option == DataOption.INDIVIDUAL or data_option == DataOption.BOTH_DATASETS:
+        data_individual = (
+            pd.read_csv(paths["path_individual"], sep=";", skiprows=[1])
+            if (paths["path_individual"] != "" and os.path.exists(paths["path_individual"]))
+            else None
+        )
+
+        data_distances = (
+            pd.read_excel(paths["path_distances"])
+            if (paths["path_distances"] != "" and os.path.exists(paths["path_distances"]))
+            else None
+        )
+
+    data_cumulative = None
+    if data_option == DataOption.CUMULATIVE or data_option == DataOption.BOTH_DATASETS:
+        data_cumulative = (
+            pd.read_csv(paths["path_cumulative"], sep=";", skiprows=[1], low_memory=True)
+            if (paths["path_cumulative"] != "" and os.path.exists(paths["path_cumulative"]))
+            else None
+        )
+        if os.path.exists(paths["path_cumulative_new"]):
+            data_cumulative_new = pd.read_csv(paths["path_cumulative_new"], sep=";", skiprows=[1])
+
+            years = data_cumulative_new["Collegejaar"].unique()
+            weeks = data_cumulative_new["Weeknummer"].unique()
+
+            data_cumulative = pd.concat([data_cumulative, data_cumulative_new], ignore_index=True)
+            data_cumulative = data_cumulative.drop_duplicates(
+                subset=[
+                    "Collegejaar",
+                    "Weeknummer",
+                    "Groepeernaam Croho",
+                    "Type hoger onderwijs",
+                    "Herinschrijving",
+                    "Hogerejaars",
+                    "Herkomst",
+                ],
+                keep="last",
+            )
+
+            add_weeks_where_preapplicants_are_zero = AddWeeksWherePreapplicantsAreZero(
+                data_cumulative, years, weeks
+            )
+
+            add_weeks_where_preapplicants_are_zero.add_weeks()
+
+            data_cumulative = add_weeks_where_preapplicants_are_zero.data_cumulative
+
+            data_cumulative.to_csv(paths["path_cumulative"], sep=";", index=False)
+            os.remove(paths["path_cumulative_new"])
+
     data_latest = (
         pd.read_excel(paths["path_latest"])
         if (paths["path_latest"] != "" and os.path.exists(paths["path_latest"]))
         else None
     )
-    data_distances = (
-        pd.read_excel(paths["path_distances"])
-        if (paths["path_distances"] != "" and os.path.exists(paths["path_distances"]))
-        else None
-    )
+
     data_weighted_ensemble = (
         pd.read_excel(paths["path_weighted_ensemble"])
         if (
@@ -40,18 +83,6 @@ def load_data(configuration):
         if paths["path_student_count_first-years"] != ""
         else None
     )
-    data_student_numbers_higher_years = (
-        pd.read_excel(paths["path_student_count_higher-years"])
-        if paths["path_student_count_higher-years"] != ""
-        else None
-    )
-    data_student_numbers_volume = (
-        pd.read_excel(paths["path_student_volume"]) if paths["path_student_volume"] != "" else None
-    )
-
-    data_october = pd.read_excel(paths["path_october"]) if paths["path_october"] != "" else None
-
-    data_ratios = pd.read_excel(paths["path_ratios"]) if paths["path_ratios"] != "" else None
 
     if data_individual is not None:
         columns_i = configuration["columns"]["individual"]
@@ -119,13 +150,9 @@ def load_data(configuration):
         data_individual,
         data_cumulative,
         data_student_numbers_first_years,
-        data_student_numbers_higher_years,
-        data_student_numbers_volume,
         data_latest,
         data_distances,
         data_weighted_ensemble,
-        data_october,
-        data_ratios,
     )
 
 

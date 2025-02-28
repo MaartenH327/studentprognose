@@ -139,16 +139,16 @@ class Main:
         # Make sure that the output files are closed. Otherwise the program will crash when
         # it tries to write to these files.
         try:
-            open("data/output/output_prelim.xlsx", "w")
+            open("data/output/output_prelim.xlsx", "w").close()
 
             if "test" not in self.filtering_path:
                 match self.student_year_prediction:
                     case StudentYearPrediction.FIRST_YEARS:
-                        open("data/output/output_first-years.xlsx", "w")
+                        open("data/output/output_first-years.xlsx", "w").close()
                     case StudentYearPrediction.HIGHER_YEARS:
-                        open("data/output/output_higher-years.xlsx", "w")
+                        open("data/output/output_higher-years.xlsx", "w").close()
                     case StudentYearPrediction.VOLUME:
-                        open("data/output/output_volume.xlsx", "w")
+                        open("data/output/output_volume.xlsx", "w").close()
 
         except IOError:
             input(
@@ -168,14 +168,10 @@ class Main:
             self.data_individual,
             self.data_cumulative,
             self.data_student_numbers_first_years,
-            self.data_student_numbers_higher_years,
-            self.data_student_numbers_volume,
             self.data_latest,
             self.data_distances,
             self.ensemble_weights,
-            self.data_october,
-            self.data_ratios,
-        ) = load_data(self.configuration)
+        ) = load_data(self.configuration, self.data_option)
 
         CWD = os.path.dirname(os.path.abspath(__file__))
         helpermethods_initialise_material = [
@@ -231,16 +227,16 @@ class Main:
                 helpermethods_initialise_material,
             )
 
-        self.higher_years_dataholder = HigherYears(
-            self.data_student_numbers_first_years,
-            self.data_student_numbers_higher_years,
-            self.data_student_numbers_volume,
-            self.data_individual,
-            self.configuration,
-            self.data_october,
-            self.data_ratios,
-            CWD,
-        )
+        # self.higher_years_dataholder = HigherYears(
+        #     self.data_student_numbers_first_years,
+        #     self.data_student_numbers_higher_years,
+        #     self.data_student_numbers_volume,
+        #     self.data_individual,
+        #     self.configuration,
+        #     self.data_october,
+        #     self.data_ratios,
+        #     CWD,
+        # )
 
         if (
             self.student_year_prediction == StudentYearPrediction.FIRST_YEARS
