@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import numpy as np
 import sys
+from fill_in_ratiofile import calculate_ratios
+import datetime
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from scripts.load_data import load_configuration
@@ -157,6 +159,30 @@ class PredictHigherYearsBasedOnLastYearNumbers:
 
 
 if __name__ == "__main__":
+    arguments = sys.argv
+    predict_years = []
+    year_slice = False
+
+    for i in range(1, len(arguments)):
+        arg = arguments[i]
+        if arg == "-y" or arg == "-year":
+            continue
+        elif arg == ":":
+            year_slice = True
+        elif arg.isnumeric():
+            if year_slice:
+                last_year = predict_years.pop(-1)
+                predict_years = predict_years + list(range(last_year, int(arg) + 1))
+                year_slice = False
+            else:
+                predict_years.append(int(arg))
+
+    if predict_years == []:
+        current_year = datetime.date.today().year
+
+    skip_years = 0
+    week = 0
+
     configuration = load_configuration("configuration/configuration.json")
 
     data_student_numbers_first_years = pd.read_excel(
@@ -165,6 +191,9 @@ if __name__ == "__main__":
     data_student_numbers_higher_years = pd.read_excel(
         configuration["paths"]["path_student_count_higher-years"]
     )
+
+    calculate_ratios(predict_years)
+
     data_october = pd.read_excel(configuration["paths"]["path_october"])
     data_ratios = pd.read_excel(configuration["paths"]["path_ratios"])
     data_latest = pd.read_excel(configuration["paths"]["path_latest"])
@@ -174,6 +203,7 @@ if __name__ == "__main__":
         data_october["Groepeernaam Croho"] == "M LVHO in de Taal- en Cultuurwetenschappen"
     ]["Groepeernaam Croho"] = "M LVHO in de Taal en Cultuurwetenschappen"
 
+    print("Predicting higher years based on last year numbers...")
     predict_higher_years_based_on_last_year_numbers = PredictHigherYearsBasedOnLastYearNumbers(
         data_student_numbers_first_years,
         data_student_numbers_higher_years,
@@ -181,10 +211,6 @@ if __name__ == "__main__":
         data_ratios,
         data_latest,
     )
-
-    predict_years = [2025]
-    skip_years = 0
-    week = 0
 
     for predict_year in predict_years:
         print(f"Predicting year {predict_year}")

@@ -23,6 +23,18 @@ class FillInRatioFile:
         data_october = self.data_october.copy(deep=True)
         data_ratios = self.data_ratios.copy(deep=True)
 
+        if data_ratios.empty:
+            data_ratios = pd.DataFrame(
+                columns=[
+                    "Collegejaar",
+                    "Croho groepeernaam",
+                    "Herkomst",
+                    "Examentype",
+                    "Ratio dat doorstroomt",
+                    "Ratio dat uitvalt",
+                ]
+            )
+
         for programme in data_october["Groepeernaam Croho"].unique():
             for examtype in data_october[data_october["Groepeernaam Croho"] == programme][
                 "Examentype code"
@@ -71,7 +83,7 @@ class FillInRatioFile:
                             "Ratio dat uitvalt",
                         ] = avg_ratio_dropping_out_in_higher_year
 
-        return data_ratios
+        self.data_ratios = data_ratios.copy()
 
     def ratio_last_3_years(self, predict_year, programme, examtype, herkomst):
         avg_ratio_advancing_to_higher_year = 0
@@ -160,7 +172,8 @@ class FillInRatioFile:
         return ratio_dropping_out
 
 
-if __name__ == "__main__":
+def calculate_ratios(years_to_predict):
+    print("Calculating ratios for the years: ", years_to_predict)
     configuration = load_configuration("configuration/configuration.json")
 
     data_student_numbers_first_years = pd.read_excel(
@@ -169,8 +182,12 @@ if __name__ == "__main__":
     data_student_numbers_higher_years = pd.read_excel(
         configuration["paths"]["path_student_count_higher-years"]
     )
+
     data_october = pd.read_excel(configuration["paths"]["path_october"])
-    data_ratios = pd.read_excel(configuration["paths"]["path_ratios"])
+    try:
+        data_ratios = pd.read_excel(configuration["paths"]["path_ratios"])
+    except:
+        data_ratios = pd.DataFrame()
 
     fill_in_ratio_file = FillInRatioFile(
         data_student_numbers_first_years,
@@ -179,10 +196,10 @@ if __name__ == "__main__":
         data_ratios,
     )
 
-    new_data_ratios = fill_in_ratio_file.calculate_ratios_and_fill_in_dataframe(2025)
+    for year in years_to_predict:
+        fill_in_ratio_file.calculate_ratios_and_fill_in_dataframe(year)
 
-    CWD = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    outfile = os.path.join(CWD, "data/output/ratiobestand.xlsx")
+    new_data_ratios = fill_in_ratio_file.data_ratios
 
     new_data_ratios.sort_values(
         by=["Croho groepeernaam", "Examentype", "Collegejaar", "Herkomst"],
@@ -200,4 +217,4 @@ if __name__ == "__main__":
         ]
     ]
 
-    new_data_ratios.to_excel(outfile)
+    new_data_ratios.to_excel(configuration["paths"]["path_ratios"], index=False)

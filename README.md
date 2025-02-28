@@ -26,20 +26,24 @@ Wordt vervolgd!
 
 This Python script predicts the influx of students at the Radboud University for the current year and week. The year and week can also be specified.
 
-## Installation
+# Prerequisites
 
-To get started, use the make file to install all pre-commit, pre-push files and dependencies and create a virtual environment. Please do this every time you are going to use the program. This ensures being up-to-date and the usage of the virtual environment.
+1. Install uv on your system:
+
+Please refer to the official installation guide of [uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+2. Clone the repository:
 
 ```
-make 
-```
+git clone https://github.com/cedanl/studentprognose.git
 
+cd studentprognose
 ## Usage of program
 
 Execute the script with the current year and week using the following command:
 
 ```
-python main.py
+uv run main.py
 ```
 
 To predict different years/weeks or in a different way, use any of the following command line parameters to your liking.
@@ -49,26 +53,26 @@ To predict different years/weeks or in a different way, use any of the following
 Execute the script with a specified year and week with `-y` and `-w`, e.g.:
 
 ```
-python main.py -w 6 -y 2024
-python main.py -W 1 2 3 -Y 2024
-python main.py -year 2023 2024
-python main.py -week 40 41
+uv run main.py -w 6 -y 2024
+uv run main.py -W 1 2 3 -Y 2024
+uv run main.py -year 2023 2024
+uv run main.py -week 40 41
 ```
 
 For predicting multiple years/weeks we also provide slicing, in the example the weeks 10 up to and including 20 will be predicted:
 
 ```
-python main.py -w 10 : 20 -y 2023
+uv run main.py -w 10 : 20 -y 2023
 ```
 
-### Datasets
+### Datasets (use only if you have multiple datasets, other than the Studielink data)
 
 The main datasets that are used in this script are the cumulative data per programme/origin/year/week and individual data per student. If one of these is not present then only the other dataset can be used.
 
 ```
-python main.py -d individual
-python main.py -D cumulative
-python main.py -dataset both
+uv run main.py -d individual
+uv run main.py -D cumulative
+uv run main.py -dataset both
 ```
 
 ### Configuration
@@ -89,24 +93,9 @@ python main.py -f path/to/filtering.json
 python main.py -filtering longer/path/to/filtering.json
 ```
 
-### Student year prediction
-
-By default only the first year students are predicted, while the script also supports prediction of higher years or volume predictions.
-
-```
-python main.py -sy first-years
-python main.py -SY higher-years
-python main.py -studentyear volume
-```
-
 ### Predict a year ahead
 
-When wanting to predict e.g. the academic year 2025/2026, but only having some amount of pre-applicants data from the academic year 2023/2024, it is possible to predict that academic year using the skip years feature. By default this value is equal to 0, because then no years are skipped.
-
-```
-python main.py -sk 1 -y 2025
-python main.py -skipyears 2 -year 2026
-```
+Still in development!
 
 ### Syntax
 
@@ -130,13 +119,13 @@ In the following the syntax for all command line options is shown:
 Example 1: Predict volume of the years 2023 and 2024, weeks 10 up to and including 20 and use both datasets
 
 ```
-python main.py -y 2023 2024 -w 10 : 20 -d b -sy v
+uv run main.py -y 2023 2024 -w 10 : 20 -d b -sy v
 ```
 
 Example 2: Predict first years students of the academic year 2025/2026, week 5, use cumulative, only postprocess new predicted data
 
 ```
-python main.py -y 2025 -w 5 -d b -sy f -sk 1
+uv run main.py -y 2025 -w 5 -d b -sy f -sk 1
 ```
 
 ### Testing

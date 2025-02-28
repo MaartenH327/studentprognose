@@ -276,6 +276,7 @@ class HelperMethods:
             self.data = pd.merge(
                 left=self.data,
                 right=average_ratios,
+                how="left",
                 on=["Croho groepeernaam", "Examentype", "Herkomst", "Weeknummer"],
             )
 
@@ -347,89 +348,107 @@ class HelperMethods:
 
         # Compute ensemble predictions using vectorized operations
 
-        self.data.loc[
-            (self.data["Collegejaar"] == predict_year) & (self.data["Weeknummer"] == predict_week),
-            "Ensemble_prediction",
-        ] = self.data[
+        for examentype in self.data[
             (self.data["Collegejaar"] == predict_year) & (self.data["Weeknummer"] == predict_week)
-        ].apply(
-            self._get_normal_ensemble, axis=1
-        )
-
-        if self.ensemble_weights is not None:
-            # Merge weights into data for vectorized calculations
-            weights = self.ensemble_weights.rename(columns={"Programme": "Croho groepeernaam"})
-            if "Average_ensemble_prediction" not in self.data.columns:
-                weights = weights.rename(
-                    columns={"Average_ensemble_prediction": "Average_ensemble_prediction_weight"}
-                )
-            self.data = self.data.merge(
-                weights,
-                on=["Collegejaar", "Croho groepeernaam", "Herkomst"],
-                how="left",
-                suffixes=("", "_weight"),
-            )
-
-            weighted_ensemble = (
-                self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["SARIMA_cumulative"].fillna(0)
-                * self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["SARIMA_cumulative_weight"].fillna(0)
-                + self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["SARIMA_individual"].fillna(0)
-                * self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["SARIMA_individual_weight"].fillna(0)
-                + self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["Prognose_ratio"].fillna(0)
-                * self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["Prognose_ratio_weight"].fillna(0)
-            )
-
+        ]["Examentype"].unique():
             self.data.loc[
                 (self.data["Collegejaar"] == predict_year)
-                & (self.data["Weeknummer"] == predict_week),
-                "Weighted_ensemble_prediction",
-            ] = np.where(
-                self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["Average_ensemble_prediction_weight"]
-                != 1,
-                weighted_ensemble,
-                self.data[
-                    (self.data["Collegejaar"] == predict_year)
-                    & (self.data["Weeknummer"] == predict_week)
-                ]["Weighted_ensemble_prediction"],
+                & (self.data["Weeknummer"] == predict_week)
+                & (self.data["Examentype"] == examentype),
+                "Ensemble_prediction",
+            ] = self.data[
+                (self.data["Collegejaar"] == predict_year)
+                & (self.data["Weeknummer"] == predict_week)
+                & (self.data["Examentype"] == examentype)
+            ].apply(
+                self._get_normal_ensemble, axis=1
             )
 
-            self.data = self.data.drop(
-                [
-                    "SARIMA_cumulative_weight",
-                    "SARIMA_individual_weight",
-                    "Prognose_ratio_weight",
-                    "Average_ensemble_prediction_weight",
-                ],
-                axis=1,
-            )
+            if self.ensemble_weights is not None:
+                # Merge weights into data for vectorized calculations
+                weights = self.ensemble_weights.rename(columns={"Programme": "Croho groepeernaam"})
+                if "Average_ensemble_prediction" not in self.data.columns:
+                    weights = weights.rename(
+                        columns={
+                            "Average_ensemble_prediction": "Average_ensemble_prediction_weight"
+                        }
+                    )
+                self.data = self.data.merge(
+                    weights,
+                    on=["Collegejaar", "Croho groepeernaam", "Examentype", "Herkomst"],
+                    how="left",
+                    suffixes=("", "_weight"),
+                )
+
+                weighted_ensemble = (
+                    self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["SARIMA_cumulative"].fillna(0)
+                    * self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["SARIMA_cumulative_weight"].fillna(0)
+                    + self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["SARIMA_individual"].fillna(0)
+                    * self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["SARIMA_individual_weight"].fillna(0)
+                    + self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["Prognose_ratio"].fillna(0)
+                    * self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["Prognose_ratio_weight"].fillna(0)
+                )
+
+                self.data.loc[
+                    (self.data["Collegejaar"] == predict_year)
+                    & (self.data["Weeknummer"] == predict_week)
+                    & (self.data["Examentype"] == examentype),
+                    "Weighted_ensemble_prediction",
+                ] = np.where(
+                    self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["Average_ensemble_prediction_weight"]
+                    != 1,
+                    weighted_ensemble,
+                    self.data[
+                        (self.data["Collegejaar"] == predict_year)
+                        & (self.data["Weeknummer"] == predict_week)
+                        & (self.data["Examentype"] == examentype)
+                    ]["Weighted_ensemble_prediction"],
+                )
+
+                self.data = self.data.drop(
+                    [
+                        "SARIMA_cumulative_weight",
+                        "SARIMA_individual_weight",
+                        "Prognose_ratio_weight",
+                        "Average_ensemble_prediction_weight",
+                    ],
+                    axis=1,
+                )
 
         # Compute average ensemble predictions
         self.data["Average_ensemble_prediction"] = np.nan
 
         # Use groupby and rolling to calculate averages
         self.data["Average_ensemble_prediction"] = self.data.groupby(
-            ["Croho groepeernaam", "Herkomst", "Collegejaar"]
+            ["Croho groepeernaam", "Examentype", "Herkomst", "Collegejaar"]
         )["Ensemble_prediction"].transform(
             lambda x: x.rolling(window=4, min_periods=1).mean().shift().bfill()
         )

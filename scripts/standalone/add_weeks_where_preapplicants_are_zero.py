@@ -4,7 +4,7 @@ import numpy as np
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-from scripts.load_data import load_configuration
+# from scripts.load_data import load_configuration
 
 
 class AddWeeksWherePreapplicantsAreZero:
@@ -15,6 +15,12 @@ class AddWeeksWherePreapplicantsAreZero:
 
     def add_weeks(self):
         data_cumulative = self.data_cumulative
+
+        data_cumulative.loc[
+            (data_cumulative["Type hoger onderwijs"] == "Pre-master"),
+            "Hogerejaars",
+        ] = "Nee"
+
         data_cumulative = data_cumulative[data_cumulative["Hogerejaars"] == "Nee"]
 
         herkomsten = ["NL", "EER", "Niet-EER"]
@@ -87,10 +93,9 @@ class AddWeeksWherePreapplicantsAreZero:
 
 
 if __name__ == "__main__":
-    configuration = load_configuration("configuration/configuration.json")
-    data_cumulative = pd.read_csv(
-        configuration["paths"]["path_cumulative"], sep=";", skiprows=[1], low_memory=True
-    )
+    # configuration = load_configuration("configuration/configuration.json")
+    path_cumulative = "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\vooraanmeldingen_cumulatief.csv"
+    data_cumulative = pd.read_csv(path_cumulative, sep=";", skiprows=[1], low_memory=True)
 
     years = [2024]
     weeks = [

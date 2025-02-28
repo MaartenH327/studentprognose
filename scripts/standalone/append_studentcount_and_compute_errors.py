@@ -23,13 +23,16 @@ class AppendStudentCountAndComputeErrors:
         )
         data_latest = pd.merge(
             data_latest,
-            student_count_first_years,
+            student_count_higher_years,
             how="left",
             on=["Collegejaar", "Croho groepeernaam", "Herkomst", "Examentype"],
         )
+        data_latest.rename(
+            columns={"Aantal_studenten": "Aantal_studenten_higher_years"}, inplace=True
+        )
         data_latest = pd.merge(
             data_latest,
-            student_count_higher_years,
+            student_count_first_years,
             how="left",
             on=["Collegejaar", "Croho groepeernaam", "Herkomst", "Examentype"],
         )
@@ -69,6 +72,7 @@ class AppendStudentCountAndComputeErrors:
 if __name__ == "__main__":
     configuration = load_configuration("configuration/configuration.json")
     data_latest = pd.read_excel(configuration["paths"]["path_latest"])
+    data_latest_cols = data_latest.columns.tolist()
     student_count_first_years = pd.read_excel(
         configuration["paths"]["path_student_count_first-years"]
     )
@@ -84,6 +88,8 @@ if __name__ == "__main__":
     append_studentcount_and_compute_errors.compute_errors()
 
     new_data_latest = append_studentcount_and_compute_errors.data_latest
+
+    new_data_latest = new_data_latest[data_latest_cols]
 
     CWD = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     outfile = os.path.join(CWD, "data/output/totaal.xlsx")

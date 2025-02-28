@@ -1,8 +1,29 @@
 import pandas as pd
 import numpy as np
 import os
+import sys
+import datetime
 
-years = [2022, 2023, 2024, 2025]
+arguments = sys.argv
+years = []
+year_slice = False
+
+for i in range(1, len(arguments)):
+    arg = arguments[i]
+    if arg == "-y" or arg == "-year":
+        continue
+    elif arg == ":":
+        year_slice = True
+    elif arg.isnumeric():
+        if year_slice:
+            last_year = years.pop(-1)
+            years = years + list(range(last_year, int(arg) + 1))
+            year_slice = False
+        else:
+            years.append(int(arg))
+
+if years == []:
+    current_year = datetime.date.today().year
 
 data = pd.read_excel(
     "//ru.nl/wrkgrp/TeamIR/Man_info/Student Analytics/Prognosemodel RU/Syntax/Python/studentprognose/data/input/totaal.xlsx"
@@ -66,11 +87,14 @@ def calculate_weight_distribution(metrics, percentage, second_percentage):
 
 
 def get_metric_weight_distribution(
-    data, programme, herkomst, percentage, second_percentage, methods, year
+    data, programme, examentype, herkomst, percentage, second_percentage, methods
 ):
     # print(programme, herkomst)
-    data = data[data["Croho groepeernaam"] == programme]
-    data = data[data["Herkomst"] == herkomst]
+    data = data[
+        (data["Croho groepeernaam"] == programme)
+        & (data["Examentype"] == examentype)
+        & (data["Herkomst"] == herkomst)
+    ]
 
     MAE = [(method, np.nanmean(data[f"MAE_{method}"])) for method in methods]
     MAE = calculate_weight_distribution(MAE, percentage, second_percentage)
@@ -102,25 +126,29 @@ for year in years:
         print(f"Percentage: {percentage}")
         for second_percentage in percentage_range:
             for programme in data_temp["Croho groepeernaam"].unique():
-                for herkomst in data_temp["Herkomst"].unique():
-                    weight_distribution["Collegejaar"].append(year)
-                    weight_distribution["Programme"].append(programme)
-                    weight_distribution["Herkomst"].append(herkomst)
-                    weight_distribution["Percentage"].append(percentage)
-                    weight_distribution["Second percentage"].append(second_percentage)
+                for examentype in data_temp[data_temp["Croho groepeernaam"] == programme][
+                    "Examentype"
+                ].unique():
+                    for herkomst in data_temp["Herkomst"].unique():
+                        weight_distribution["Collegejaar"].append(year)
+                        weight_distribution["Programme"].append(programme)
+                        weight_distribution["Examentype"].append(examentype)
+                        weight_distribution["Herkomst"].append(herkomst)
+                        weight_distribution["Percentage"].append(percentage)
+                        weight_distribution["Second percentage"].append(second_percentage)
 
-                    MAE, MAPE = get_metric_weight_distribution(
-                        data_temp,
-                        programme,
-                        herkomst,
-                        percentage,
-                        second_percentage,
-                        methods,
-                        year,
-                    )
+                        MAE, MAPE = get_metric_weight_distribution(
+                            data_temp,
+                            programme,
+                            examentype,
+                            herkomst,
+                            percentage,
+                            second_percentage,
+                            methods,
+                        )
 
-                    MAEs.append(MAE)
-                    MAPEs.append(MAPE)
+                        MAEs.append(MAE)
+                        MAPEs.append(MAPE)
 
 for m in methods:
     weight_distribution[f"MAE_{m}"] = [dict(MAE)[m] for MAE in MAEs]
@@ -188,13 +216,11 @@ for year in years:
                 for i, row_weight in filtered_weight_data.iterrows():
                     filtered_data = data[
                         (data["Croho groepeernaam"] == row_weight["Programme"])
+                        & (data["Examentype"] == row_weight["Examentype"])
                         & (data["Collegejaar"] < row_weight["Collegejaar"])
+                        & (data["Collegejaar"] >= 2021)
+                        & (data["Herkomst"] == row_weight["Herkomst"])
                     ]
-                    filtered_data = filtered_data[
-                        filtered_data["Herkomst"] == row_weight["Herkomst"]
-                    ]
-                    filtered_data = filtered_data[filtered_data["Collegejaar"] >= 2021]
-                    # print(filtered_data)
 
                     use_average_ensemble = False
                     if sum([row_weight[f"MAE_{method}"] for method in methods]) != 1:
@@ -261,13 +287,14 @@ if os.path.isfile("configuration/error_rates.xlsx"):
 
 error_rates.to_excel("configuration/error_rates.xlsx", index=False)
 
-error_rates = pd.read_excel("configuration/error_rates.xlsx")
-weight_data = pd.read_excel("configuration/weight_distribution.xlsx")
+# error_rates = pd.read_excel("configuration/error_rates.xlsx")
+# weight_data = pd.read_excel("configuration/weight_distribution.xlsx")
 
 print("Calculating ensemble weights...")
 ensemble_weights = {
     "Collegejaar": [],
     "Programme": [],
+    "Examentype": [],
     "Herkomst": [],
     "SARIMA_cumulative": [],
     "SARIMA_individual": [],
@@ -296,6 +323,7 @@ for year in years:
         for i, row in temp_data.iterrows():
             ensemble_weights["Collegejaar"].append(year)
             ensemble_weights["Programme"].append(row["Programme"])
+            ensemble_weights["Examentype"].append(row["Examentype"])
             ensemble_weights["Herkomst"].append(row["Herkomst"])
 
             average_ensemble_weight = 0.0
@@ -320,6 +348,8 @@ if os.path.isfile("configuration/ensemble_weights.xlsx"):
         ~existing_ensemble_weights["Collegejaar"].isin(years)
     ]
     ensemble_weights = pd.concat([existing_ensemble_weights, ensemble_weights])
-    ensemble_weights = ensemble_weights.sort_values(by=["Collegejaar", "Programme", "Herkomst"])
+    ensemble_weights = ensemble_weights.sort_values(
+        by=["Collegejaar", "Programme", "Examentype", "Herkomst"]
+    )
 
 ensemble_weights.to_excel("configuration/ensemble_weights.xlsx", index=False)

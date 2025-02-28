@@ -133,6 +133,10 @@ class BothDatasets(Superclass):
         data_to_predict = self.cumulative.data_cumulative[
             (self.cumulative.data_cumulative["Collegejaar"] == self.predict_year)
             & (self.cumulative.data_cumulative["Weeknummer"] == self.predict_week)
+            & (
+                self.cumulative.data_cumulative["Croho groepeernaam"]
+                != "M Educatie in de Mens- en Maatschappijwetenschappen"
+            )
         ]
         if self.programme_filtering != []:
             data_to_predict = data_to_predict[
