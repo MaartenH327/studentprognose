@@ -14,6 +14,7 @@ This runs a prediction for the academic year 2024/2025 in week 4.
 ⚠️ Note:
 - Check the pseudonymized data to see which years and weeks are available. If no year and week are specified, the script defaults to the current week, which may not work with the provided data. 
 - Ensure that configuration.json contains the correct file paths for the provided files; otherwise, the script will fail.
+- You can use the **base.json** file to filter by program, exam type, or origin to quickly test whether the script works.  
 ---
 
 # Prerequisites (short)
