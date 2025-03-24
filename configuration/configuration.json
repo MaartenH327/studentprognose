@@ -12,7 +12,7 @@
         "path_ratios": "[JOUW_INPUT_FOLDER]\\ratiobestand.xlsx"
     },
     "numerus_fixus": {
-        "B Opleiding": 0,
+        "B Opleiding": 0
     },
     "columns": {
         "individual": {
