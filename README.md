@@ -1,32 +1,82 @@
-# Waarom een instroomprognose?
+# Quick Start  
+After completing the **Prerequisites (short)**, you can start running the script right away. If you need more details, check out the **Prerequisites (longer)**.  
 
-Het is ieder jaar weer een spannend moment: Hoeveel studenten stonden er bij jou voor de deur van het lokaal in de eerste week van september? En hoe ziet de 1 oktober telling eruit voor je gehele instelling? Hoewel, spannend.. we kunnen dit voorspellen! Het doel van de instroomprognose is in vroeg stadium te voorspellen hoeveel studenten er komend jaar per opleiding instromen. 
+📌 Important: This script only works with the cumulative file and the model designed for it. The individual data file is internal (OSIRIS data) and will be explained later.  
 
-Zie een concreet voorbeeld van opleiding Artificial Intelligence van Radboud Universiteit:
+🛠️ **Ongoing Development:** This README is still being improved and will be updated as more people use it, ensuring it works optimally for everyone.  
+
+#### 🔹 Quick script execution:
+```
+uv run main.py -y 2024 -w 4
+```
+This runs a prediction for the academic year 2024/2025 in week 4.
+
+⚠️ Note:
+- Check the pseudonymized data to see which years and weeks are available. If no year and week are specified, the script defaults to the current week, which may not work with the provided data. 
+- Ensure that configuration.json contains the correct file paths for the provided files; otherwise, the script will fail.
+---
+
+# Prerequisites (short)
+1. Install uv on your system:
+
+Please refer to the official installation guide of [uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+2. Clone the repository:
+
+```
+git clone https://github.com/cedanl/studentprognose.git
+
+cd studentprognose
+```
+
+## Usage of program
+
+Execute the script with the current year and week using the following command:
+
+```
+uv run main.py -y 2024 -w 4
+```
+
+# Why an enrollment forecast?  
+
+Every year, it's an exciting moment: How many students showed up at your classroom door in the first week of September? And what does the October 1st count look like for your entire institution? Well, exciting... we can actually predict this! The goal of the enrollment forecast is to predict, at an early stage, how many students will enroll in each program in the coming year.  
+
+See a concrete example from the Artificial Intelligence program at Radboud University:  
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/8aff378c-74d7-4d97-86ed-00d28491a4b4" width="400">
 
-*De groene lijn is het uiteindelijk aantal inschrijvingen in deze opleiding. De diverse modellen (paarse en gele lijnen) zijn vanaf maart (week 14) stabiel en de gele lijn zelfs vanaf het begin.* 
-</div>
+*The green line represents the final number of enrollments in this program. The different models (purple and yellow lines) have been stable since March (week 14), with the yellow line even stable from the beginning.*  
+</div>  
 
-Zo heeft een onderwijsinstelling per opleiding maanden van tevoren betrouwbaar inzicht in het uiteindelijke aantal studenten. Dit zorgt ervoor dat instellingen roosters, personele inzet en schaarse financiële middelen doelmatig kunnen inzetten. Zie ook een [interview](https://www.voxweb.nl/nieuws/de-universiteit-heeft-nu-haar-eigen-glazen-bol-nieuw-model-voorspelt-toekomstige-instroom-van-studenten) met Amir over het model.
+This gives an educational institution reliable insights into the final number of students months in advance. As a result, institutions can efficiently allocate schedules, staff, and scarce financial resources. Also, check out an [interview](https://www.voxweb.nl/nieuws/de-universiteit-heeft-nu-haar-eigen-glazen-bol-nieuw-model-voorspelt-toekomstige-instroom-van-studenten) with Amir about the model.  
 
-## Meedoen met doorontwikkeling
 
-Op 29 oktober 2024 deelden Amir Khodaie en Timo Koster de [evaluaties van hun instroomprognoses](https://community-data-ai.npuls.nl/groups/view/44d20066-53a8-48c2-b4e9-be348e05d273/project-center-for-educational-data-analytics-ceda/events/view/610c71bd-5859-4092-906c-58bbfdf9801c/instroomprognose-terugblik-en-vooruit-kijken), de sessie opgenomen, laat via Corneel den Hartogh (corneel.denhartogh@surf.nl) weten als je deze terug wilt kijken. 
+---
+# Contributing to further development  
 
-Wil je meedenken? Meld je vooral aan voor de [werkgroep](https://edu.nl/6d69d).
+On October 29, 2024, Amir Khodaie and Timo Koster shared the [evaluations of their enrollment forecasts](https://community-data-ai.npuls.nl/groups/view/44d20066-53a8-48c2-b4e9-be348e05d273/project-center-for-educational-data-analytics-ceda/events/view/610c71bd-5859-4092-906c-58bbfdf9801c/instroomprognose-terugblik-en-vooruit-kijken). The session was recorded—if you would like to watch it back, please contact Corneel den Hartogh (corneel.denhartogh@surf.nl).  
 
-Dankzij jullie eerdere feedback hebben we de code verbeterd en aangevuld met documentatie. En we hebben een testbestand met gepseudonimiseerde data toegevoegd zodat daarmee getest kan worden. Let wel: Dit is alleen voor het cumulatieve model (zie onder). De volgende stap is script te maken dat ruwe Studielink telbestanden transformeert naar de cumulatieve data zoals die nu in het model gaat. Ook komen we met een betere omschrijving van het 'individuele' bestand. 
+Want to contribute ideas? Feel free to join the [working group](https://edu.nl/6d69d).  
 
-Wordt vervolgd! 
+Thanks to your previous feedback, we have improved the code and added documentation. We have also included a test file with pseudonymized data so you can test the functionality. Note: This is only for the cumulative model (see below).  
+
+The next step was to create a script that transforms raw Studielink count files into the cumulative data format used by the model. This has now been completed, and the script is called **"rowbind_inputfiles.py"**.  
+
+It is difficult to determine which institutions do or do not have a suitable file. We have assumed that institutions have one large Studielink count file that still needs to be transformed into the cumulative data file required by the model. This script performs that transformation.  
+
+⚠️ **Important:** Make sure to adjust the file path correctly so you can run the script properly. The script is located in the **standalone** folder.  
+
+Additionally, we are working on a better description of the 'individual' file.  
+
+To be continued!  
 
 # Student forecasting model
 
 This Python script predicts the influx of students at the Radboud University for the current year and week. The year and week can also be specified.
 
-# Prerequisites
+---
+# Prerequisites (longer)
 
 1. Install uv on your system:
 
@@ -38,8 +88,10 @@ Please refer to the official installation guide of [uv](https://docs.astral.sh/u
 git clone https://github.com/cedanl/studentprognose.git
 
 cd studentprognose
-## Usage of program
+```
 
+---
+# Usage of program
 Execute the script with the current year and week using the following command:
 
 ```
@@ -98,6 +150,8 @@ python main.py -filtering longer/path/to/filtering.json
 Still in development!
 
 ### Syntax
+
+⚠️ **Note:** This is outdated and needs adjustment. Updates coming soon!!  
 
 In the following the syntax for all command line options is shown:
 
