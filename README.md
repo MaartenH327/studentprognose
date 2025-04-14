@@ -2,9 +2,27 @@
 
 This Python script predicts the influx of students at the Radboud University for the current year and week. The year and week can also be specified.
 
-# Installation
+# Quick Start  
+After completing the **Prerequisites (short)**, you can start running the script right away. If you need more details, check out the **Prerequisites (longer)**.  
 
-Before running the model, install **uv** using its standalone installer. **uv** not only manages dependencies but also creates a dedicated virtual environment for your project.
+📌 Important: This script only works with the cumulative file and the model designed for it. The individual data file is internal (OSIRIS data) and will be explained later.  
+
+🛠️ **Ongoing Development:** This README is still being improved and will be updated as more people use it, ensuring it works optimally for everyone.  
+
+#### 🔹 Quick script execution:
+```
+uv run main.py -y 2024 -w 4
+```
+This runs a prediction for the academic year 2024/2025 in week 4.
+
+⚠️ Note:
+- Check the pseudonymized data to see which years and weeks are available. If no year and week are specified, the script defaults to the current week, which may not work with the provided data. 
+- Ensure that configuration.json contains the correct file paths for the provided files; otherwise, the script will fail.
+- You can use the **base.json** file to filter by program, exam type, or origin to quickly test whether the script works.  
+---
+
+# Prerequisites (short)
+1. Install uv on your system:
 
 ```
 # On Windows.
@@ -13,6 +31,15 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 # On macOS and Linux.
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+2. Clone the repository:
+
+```
+git clone https://github.com/cedanl/studentprognose.git
+```
+```
+cd studentprognose
 ```
 
 After installation, you can run the Python scripts in the virtual environment using:
@@ -25,6 +52,67 @@ For further usage details and examples, see the remaining sections of this READM
 # Predicting first-year students
 
 The main script is responsable for predicting the influx of first-year students. To run the main script for the current year and week, execute
+
+```
+uv run main.py
+```
+
+# Why an enrollment forecast?  
+
+Every year, it's an exciting moment: How many students showed up at your classroom door in the first week of September? And what does the October 1st count look like for your entire institution? Well, exciting... we can actually predict this! The goal of the enrollment forecast is to predict, at an early stage, how many students will enroll in each program in the coming year.  
+
+See a concrete example from the Artificial Intelligence program at Radboud University:  
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/8aff378c-74d7-4d97-86ed-00d28491a4b4" width="400">
+
+*The green line represents the final number of enrollments in this program. The different models (purple and yellow lines) have been stable since March (week 14), with the yellow line even stable from the beginning.*  
+</div>  
+
+This gives an educational institution reliable insights into the final number of students months in advance. As a result, institutions can efficiently allocate schedules, staff, and scarce financial resources. Also, check out an [interview](https://www.voxweb.nl/nieuws/de-universiteit-heeft-nu-haar-eigen-glazen-bol-nieuw-model-voorspelt-toekomstige-instroom-van-studenten) with Amir about the model.  
+
+
+---
+# Contributing to further development  
+
+On October 29, 2024, Amir Khodaie and Timo Koster shared the [evaluations of their enrollment forecasts](https://community-data-ai.npuls.nl/groups/view/44d20066-53a8-48c2-b4e9-be348e05d273/project-center-for-educational-data-analytics-ceda/events/view/610c71bd-5859-4092-906c-58bbfdf9801c/instroomprognose-terugblik-en-vooruit-kijken). The session was recorded—if you would like to watch it back, please contact Corneel den Hartogh (corneel.denhartogh@surf.nl).  
+
+Want to contribute ideas? Feel free to join the [working group](https://edu.nl/6d69d).  
+
+Thanks to your previous feedback, we have improved the code and added documentation. We have also included a test file with pseudonymized data so you can test the functionality. Note: This is only for the cumulative model (see below).  
+
+The next step was to create a script that transforms raw Studielink count files into the cumulative data format used by the model. This has now been completed, and the script is called **"rowbind_inputfiles.py"**.  
+
+It is difficult to determine which institutions do or do not have a suitable file. We have assumed that institutions have one large Studielink count file that still needs to be transformed into the cumulative data file required by the model. This script performs that transformation.  
+
+⚠️ **Important:** Make sure to adjust the file path correctly so you can run the script properly. The script is located in the **standalone** folder.  
+
+Additionally, we are working on a better description of the 'individual' file.  
+
+To be continued!  
+
+# Student forecasting model
+
+This Python script predicts the influx of students at the Radboud University for the current year and week. The year and week can also be specified.
+
+---
+# Prerequisites (longer)
+
+1. Install uv on your system:
+
+Please refer to the official installation guide of [uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+2. Clone the repository:
+
+```
+git clone https://github.com/cedanl/studentprognose.git
+
+cd studentprognose
+```
+
+---
+# Usage of program
+Execute the script with the current year and week using the following command:
 
 ```
 uv run main.py
@@ -49,7 +137,7 @@ For predicting multiple years/weeks we also provide slicing, in the example the 
 uv run main.py -w 10 : 20 -y 2023
 ```
 
-## Datasets
+### Datasets (use only if you have multiple datasets, other than the Studielink data)
 
 The main datasets that are used in this script are the cumulative data per programme/origin/year/week and individual data per student. If one of these is not present then only the other dataset can be used.
 
@@ -99,16 +187,13 @@ For example, if you want to predict the number of first-year 'Bachelor' students
 ```
 Simply update the default file (`configuration/filtering/base.json`) with your desired filters.
 
-<!-- ## Predict a year ahead
+### Predict a year ahead
 
-When wanting to predict e.g. the academic year 2025/2026, but only having some amount of pre-applicants data from the academic year 2023/2024, it is possible to predict that academic year using the skip years feature. By default this value is equal to 0, because then no years are skipped.
-
-```
-python main.py -sk 1 -y 2025
-python main.py -skipyears 2 -year 2026
-``` -->
+Still in development!
 
 ## Syntax
+
+⚠️ **Note:** This is outdated and needs adjustment. Updates coming soon!!  
 
 In the following the syntax for all command line options is shown:
 

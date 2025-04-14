@@ -1,24 +1,18 @@
 {
     "paths": {
-        "path_cumulative": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\vooraanmeldingen_cumulatief.csv",
-        "path_cumulative_new": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\Vooraanmeldingen.csv",
-        "path_individual": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\vooraanmeldingen_individueel.csv",
-        "path_latest": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\totaal.xlsx",
-        "path_distances": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\afstanden.xlsx",
-        "path_october": "\\\\ru.nl\\wrkgrp\\Centraal-bestanden-delen\\1-oktobercijfers\\Feiten en Cijfers Studentenaantallen 2024.xlsx",
-        "path_student_count_first-years": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\student_count_first-years.xlsx",
-        "path_student_count_higher-years": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\student_count_higher-years.xlsx",
-        "path_ratios": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\ratiobestand.xlsx",
-        "path_ensemble_weights": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\ensemble_weights.xlsx",
-        "path_error_rates": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\error_rates.xlsx",
-        "path_weight_distribution": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\weight_distribution.xlsx"
+        "path_cumulative": "C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\vooraanmeldingen_cumulatief.csv",
+        "path_latest": "C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\totaal.xlsx",
+        "path_cumulative_new": "\\C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\vooraanmeldingen_cumulatief.csv",
+        "path_distances": "[JOUW_INPUT_FOLDER]\\afstanden.xlsx",
+        "path_weighted_ensemble": "[JOUW_INPUT_FOLDER]\\ensemble_weights.xlsx",
+        "path_october": "[JOUW_INPUT_FOLDER]\\[JOUW_BESTAND_WAAR_JE_STUDENTAANTALLEN_VANDAAN_HAALT].xlsx",
+        "path_student_count_first-years": "C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\student_count_first-years_inclusief_pre-master.xlsx",
+        "path_student_count_higher-years": "[JOUW_INPUT_FOLDER]\\student_count_higher-years.xlsx",
+        "path_student_volume": "[JOUW_INPUT_FOLDER]\\student_volume.xlsx",
+        "path_ratios": "[JOUW_INPUT_FOLDER]\\ratiobestand.xlsx"
     },
     "numerus_fixus": {
-        "B Biology": 220,
-        "B Biomedische Wetenschappen": 100,
-        "B Geneeskunde": 330,
-        "B Psychologie": 600,
-        "B Tandheelkunde": 67
+        "B Opleiding": 0
     },
     "columns": {
         "individual": {
