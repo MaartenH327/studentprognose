@@ -1,5 +1,6 @@
 scrips/__pycache__/
 *.pyc
+.venv/
 
 #Data files can be ignored
 data/*
@@ -11,3 +12,5 @@ data/input/*
 !data/output
 data/output/*
 !data/output/blank.xlsx
+
+

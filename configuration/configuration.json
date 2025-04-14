@@ -1,15 +1,17 @@
 {
     "paths": {
         "path_cumulative": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\vooraanmeldingen_cumulatief.csv",
+        "path_cumulative_new": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\Vooraanmeldingen.csv",
         "path_individual": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\vooraanmeldingen_individueel.csv",
         "path_latest": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\totaal.xlsx",
         "path_distances": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\afstanden.xlsx",
-        "path_weighted_ensemble": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\ensemble_weights.xlsx",
         "path_october": "\\\\ru.nl\\wrkgrp\\Centraal-bestanden-delen\\1-oktobercijfers\\Feiten en Cijfers Studentenaantallen 2024.xlsx",
         "path_student_count_first-years": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\student_count_first-years.xlsx",
         "path_student_count_higher-years": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\student_count_higher-years.xlsx",
-        "path_student_volume": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\student_volume.xlsx",
-        "path_ratios": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\ratiobestand.xlsx"
+        "path_ratios": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\data\\input\\ratiobestand.xlsx",
+        "path_ensemble_weights": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\ensemble_weights.xlsx",
+        "path_error_rates": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\error_rates.xlsx",
+        "path_weight_distribution": "\\\\ru.nl\\wrkgrp\\TeamIR\\Man_info\\Student Analytics\\Prognosemodel RU\\Syntax\\Python\\studentprognose\\configuration\\weight_distribution.xlsx"
     },
     "numerus_fixus": {
         "B Biology": 220,

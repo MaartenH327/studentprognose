@@ -7,15 +7,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 from scripts.load_data import load_configuration
 
 
-def map_examtype(exam_code):
-    if "Bachelor" in exam_code:
-        return "Bachelor"
-    elif "Master" in exam_code:
-        return "Master"
-    else:
-        return "Pre-master"
-
-
 def calculate_student_count(data, volume):
     dict = {
         "Collegejaar": [],
@@ -30,23 +21,23 @@ def calculate_student_count(data, volume):
     year_key = "Collegejaar"
     examtype_key = "Examentype code"
 
+    data.loc[(data["Examentype code"] == "Pre-master"), "Aantal eerstejaars croho"] = 1
+
     for programme in data[programme_key].unique():
         for herkomst in data[herkomst_key].unique():
             years = data[year_key].unique()
             years = years[~np.isnan(years)]
             years = np.sort(years)
             for year in years:
-                filtered_data = data[
-                    (data[year_key] == year)
-                    & (data[programme_key] == programme)
-                    & (data[herkomst_key] == herkomst)
+                filtered_data = data.copy()
+                filtered_data = filtered_data[
+                    (filtered_data[year_key] == year)
+                    & (filtered_data[programme_key] == programme)
+                    & (filtered_data[herkomst_key] == herkomst)
                 ]
 
                 if not volume:
-                    filtered_data = filtered_data[
-                        (filtered_data[examtype_key] == "Pre-master")
-                        | (filtered_data["Aantal eerstejaars croho"] == 1)
-                    ]
+                    filtered_data = filtered_data[(filtered_data["Aantal eerstejaars croho"] == 1)]
                     filtered_data = filtered_data[
                         (filtered_data[examtype_key] == "Bachelor eerstejaars")
                         | (filtered_data[examtype_key] == "Master")
@@ -59,12 +50,6 @@ def calculate_student_count(data, volume):
                         | (filtered_data[examtype_key] == "Pre-master")
                         | (filtered_data[examtype_key] == "Bachelor hogerejaars")
                     ]
-
-                filtered_data = filtered_data[
-                    ~filtered_data[examtype_key].str.contains("Master post initieel")
-                ]
-
-                # filtered_data[filtered_data[examtype_key].str.contains("Bachelor")].loc[examtype_key] = "Bachelor"
 
                 filtered_data.loc[
                     filtered_data[examtype_key].str.contains("Bachelor"), examtype_key
@@ -79,7 +64,7 @@ def calculate_student_count(data, volume):
                         dict["Croho groepeernaam"].append(programme)
                         dict["Herkomst"].append(herkomst)
                         dict["Aantal_studenten"].append(student_count)
-                        dict["Examentype"].append(map_examtype(examtype))
+                        dict["Examentype"].append(examtype)
 
     dict = pd.DataFrame(dict)
     return dict

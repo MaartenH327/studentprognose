@@ -270,6 +270,7 @@ class Cumulative(Superclass):
 
         programme = row["Croho groepeernaam"]
         herkomst = row["Herkomst"]
+        examentype = row["Examentype"]
 
         if not already_printed:
             print(
@@ -289,6 +290,7 @@ class Cumulative(Superclass):
             (data["Herkomst"] == herkomst)
             & (data["Collegejaar"] <= self.predict_year - self.skip_years)
             & (data["Croho groepeernaam"] == programme)
+            & (data["Examentype"] == examentype)
         ]
 
         # Week 39 to 0
@@ -371,6 +373,7 @@ class Cumulative(Superclass):
         for _, row in data_to_predict.iterrows():
             programme = row["Croho groepeernaam"]
             herkomst = row["Herkomst"]
+            examentype = row["Examentype"]
 
             if i == len(predictions):
                 break
@@ -379,7 +382,8 @@ class Cumulative(Superclass):
                 data.loc[
                     (data["Collegejaar"] == self.predict_year - self.skip_years)
                     & (data["Croho groepeernaam"] == programme)
-                    & (data["Herkomst"] == herkomst),
+                    & (data["Herkomst"] == herkomst)
+                    & (data["Examentype"] == examentype),
                     index:"38",
                 ] = predictions[i]
             i += 1
@@ -387,16 +391,21 @@ class Cumulative(Superclass):
             # If the programme is in the numerus fixus list, the model must only be trained on
             # results of that specific programme in the past.
             if programme in self.numerus_fixus_list:
-                train = data[(data["Croho groepeernaam"] == programme)]
+                train = data[
+                    (data["Croho groepeernaam"] == programme) & (data["Examentype"] == examentype)
+                ]
                 test = data[
-                    (data["Croho groepeernaam"] == programme) & (data["Herkomst"] == herkomst)
+                    (data["Croho groepeernaam"] == programme)
+                    & (data["Herkomst"] == herkomst)
+                    & (data["Examentype"] == examentype)
                 ]
                 data_to_predict = self._predict_with_xgboost_extra_year(
                     train,
                     test,
                     data_to_predict,
                     (data_to_predict["Croho groepeernaam"] == programme)
-                    & (data_to_predict["Herkomst"] == herkomst),
+                    & (data_to_predict["Herkomst"] == herkomst)
+                    & (data_to_predict["Examentype"] == examentype),
                 )
 
         # Predict with XGBoost for bachelor, pre-master and master programmes apart
