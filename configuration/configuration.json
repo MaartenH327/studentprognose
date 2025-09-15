@@ -4,7 +4,7 @@
         "path_latest": "C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\totaal.xlsx",
         "path_cumulative_new": "\\C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\vooraanmeldingen_cumulatief.csv",
         "path_distances": "[JOUW_INPUT_FOLDER]\\afstanden.xlsx",
-        "path_weighted_ensemble": "[JOUW_INPUT_FOLDER]\\ensemble_weights.xlsx",
+        "path_ensemble_weights": "[JOUW_INPUT_FOLDER]\\ensemble_weights.xlsx",
         "path_october": "[JOUW_INPUT_FOLDER]\\[JOUW_BESTAND_WAAR_JE_STUDENTAANTALLEN_VANDAAN_HAALT].xlsx",
         "path_student_count_first-years": "C:\\Users\\YOUR_USER_NAME\\Documents\\GitHub\\ceda\\studentprognose\\data\\input\\student_count_first-years_inclusief_pre-master.xlsx",
         "path_student_count_higher-years": "[JOUW_INPUT_FOLDER]\\student_count_higher-years.xlsx",
